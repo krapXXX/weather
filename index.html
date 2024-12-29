@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Прогноз погоди</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 2rem;
+    }
+
+    #parse {
+        margin-bottom: 20px;
+    }
+
+    table {
+        border-collapse: collapse;
+        border: 2px solid gainsboro;
+    }
+
+    tr {
+        border-bottom: 2px solid gainsboro;
+    }
+
+    td,
+    th {
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .desc {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .button {
+        padding: 4px;
+        background-color: rgba(44, 247, 44, 0.615);
+        border-radius: 7px;
+    }
+</style>
+
+<body>
+    <form action="parse" id="parse">
+        <label for="textCity">Name of the city</label>
+        <input type="text" name="textCity" id="textCity">
+        <button class = "button" type="button" id="add">Add</button>
+    </form>
+    <table id="weather" style="display: none;">
+        <tr>
+            <th>City</th>
+            <th>Temperature</th>
+            <th>Feels like</th>
+            <th>Description</th>
+            <th>Humidity</th>
+            <th>Sunrise</th>
+        </tr>
+    </table>
+
+    <script>
+    
+    const apiKey = 'd77e8a80bfcc7551c3135a39d716ce92';
+        let table = document.querySelector("#weather");
+        let btn = document.querySelector("#add");
+        let city = document.querySelector("#textCity");
+
+        function addCity() {
+            if (city.value == "") return;
+            table.removeAttribute("style");
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&appid=${apiKey}&units=metric&lang=uk`;
+
+            fetch(url).then(response => response.json()).then(json => {
+                console.log(json);
+                const icon = json.weather[0].icon;
+                let tr = document.createElement("tr");
+                tr.innerHTML += `<td>${json.name}</td>`;
+                tr.innerHTML += `<td>${json.main.temp}°C</td>`;
+                tr.innerHTML += `<td>${json.main.feels_like}°C</td>`;
+                tr.innerHTML += `<td class="desc"><img src="https://openweathermap.org/img/wn/${icon}.png">${json.weather[0].description}</td>`;
+                tr.innerHTML += `<td>${json.main.humidity}%</td>`;
+                tr.innerHTML += `<td>${new Date(json.sys.sunrise).toLocaleTimeString("uk-UA")}</td>`;
+                table.append(tr);
+            });
+        }
+
+        btn.addEventListener("click", addCity);
+        
+        </script>
+</body>
+
+</html>
